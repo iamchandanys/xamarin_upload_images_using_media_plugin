@@ -50,15 +50,21 @@ namespace UploadImages
                         AllowCropping = true,
                         PhotoSize = PhotoSize.Medium,
                         Directory = "Sample",
-                        Name = "test.jpg"
+                        Name = "sample.jpg"
                     });
 
                     if (file == null)
                         return;
 
-                    files.Add(file);
+                    image.Source = ImageSource.FromStream(() =>
+                    {
+                        var stream = file.GetStream();
+                        return stream;
+                    });
 
-                    await DisplayAlert("File Location", "Pic Added Successfully!", "OK");
+                    //files.Add(file);
+
+                    //await DisplayAlert("File Location", "Pic Added Successfully!", "OK");
                 }
                 else
                 {

@@ -10,6 +10,8 @@
             Text="Take Photo"
             Clicked="TakePhotoBtnClicked">
         </Button>
+
+        <Image x:Name="image"></Image>
         
     </StackLayout>
 
