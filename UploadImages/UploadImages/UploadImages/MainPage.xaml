@@ -6,13 +6,23 @@
 
     <StackLayout>
 
-        <Button
-            Text="Take Photo"
-            Clicked="TakePhotoBtnClicked">
-        </Button>
+        <StackLayout Orientation="Horizontal">
+            <Button Text="Take Photo"
+                    Clicked="TakePhotoBtnClicked">
+            </Button>
+            
+            <Button Text="Gallery"
+                    Clicked="SellectFromGalleryBtnClicked">
+            </Button>
+        </StackLayout>
+
 
         <Image x:Name="image"></Image>
-        
+
+        <Label>Path:</Label>
+
+        <Label x:Name="imagelocation"></Label>
+
     </StackLayout>
 
 </ContentPage>

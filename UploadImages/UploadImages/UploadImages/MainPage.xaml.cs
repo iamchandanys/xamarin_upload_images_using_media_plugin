@@ -23,56 +23,61 @@ namespace UploadImages
 
         private async void TakePhotoBtnClicked(object sender, EventArgs e)
         {
+            await CrossMedia.Current.Initialize();
+
+            //Check whether camera is available or take photo is supported on the device
+
             if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
             {
                 await DisplayAlert("No Camera", "No Camera Avaialble.", "OK");
                 return;
             }
-            else
+
+            var file = await CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions
             {
-                var cameraStatus = await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Camera);
-                var storageStatus = await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Storage);
+                Directory = "Sample", //Directory of the image
+                Name = "sample.jpg", //Name of the image
+                PhotoSize = PhotoSize.Medium, //Photo size
+                AllowCropping = true, //Allow cropping (supports only on iOS)
+            });
 
-                if (cameraStatus != PermissionStatus.Granted || storageStatus != PermissionStatus.Granted)
-                {
-                    var cameraAndStorageRequest = await CrossPermissions.Current.RequestPermissionsAsync(new[] { Permission.Camera, Permission.Storage });
+            if (file == null)
+                return;
 
-                    cameraStatus = cameraAndStorageRequest[Permission.Camera];
-                    storageStatus = cameraAndStorageRequest[Permission.Storage];
-                }
+            imagelocation.Text = file.Path;
 
-                if (cameraStatus == PermissionStatus.Granted && storageStatus == PermissionStatus.Granted)
-                {
-                    files.Clear();
-                    
-                    var file = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions
-                    {
-                        AllowCropping = true,
-                        PhotoSize = PhotoSize.Medium,
-                        Directory = "Sample",
-                        Name = "sample.jpg"
-                    });
+            image.Source = ImageSource.FromStream(() =>
+            {
+                var stream = file.GetStream();
+                return stream;
+            });
+        }
 
-                    if (file == null)
-                        return;
 
-                    image.Source = ImageSource.FromStream(() =>
-                    {
-                        var stream = file.GetStream();
-                        return stream;
-                    });
+        private async void SellectFromGalleryBtnClicked(object sender, EventArgs e)
+        {
+            await CrossMedia.Current.Initialize();
 
-                    //files.Add(file);
+            //Check whether camera is available or take photo is supported on the device
 
-                    //await DisplayAlert("File Location", "Pic Added Successfully!", "OK");
-                }
-                else
-                {
-                    await DisplayAlert("Permissions Denied", "Unable to take photos.", "OK");
+            if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
+            {
+                await DisplayAlert("No Camera", "No Camera Avaialble.", "OK");
+                return;
+            } 
 
-                    CrossPermissions.Current.OpenAppSettings();
-                }
-            }
+            var file = await CrossMedia.Current.PickPhotoAsync();
+
+            if (file == null)
+                return;
+
+            imagelocation.Text = file.Path;
+
+            image.Source = ImageSource.FromStream(() =>
+            {
+                var stream = file.GetStream();
+                return stream;
+            });
         }
     }
 }
